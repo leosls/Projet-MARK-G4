@@ -14,10 +14,18 @@
 #define MoteurStop() MoteurGD(Stop, Stop)
 
 
+Ultrasonic UltrasonicAv(2); 
+Ultrasonic UltrasonicDr(4); 
+Ultrasonic UltrasonicGa(6); 
+
+
 //---------------------------------------------------------------------------------------------------
 // Definition des Variables globales
 //---------------------------------------------------------------------------------------------------
 int Etat; 
+int CaptDr;
+int CaptGa;
+int Diff;
 enum { Avancer, Obstacle }; // Définition des états possibles
 
 
@@ -38,6 +46,10 @@ void InitMoteurs()
     TIMSK5 = 1 << TOIE5; // Interruption sur débordement du Timer5
 }
 
+
+
+  
+
 //---------------------------------------------------------------------------------------------------
 // Fonction d'évitement des obstacles
 //---------------------------------------------------------------------------------------------------
@@ -46,6 +58,31 @@ void EvitementObstacles()
     // Code pour éviter les obstacles
     Serial.println("Evitement des obstacles activé");
 
+}
+
+//---------------------------------------------------------------------------------------------------
+// Fonction d'avancer
+//----------------------------------------------------------------------------------------------
+
+void Favancer()
+
+{
+
+CaptDr = UltrasonicDr.MeasureInCentimeters();
+CaptGa = UltrasonicGa.MeasureInCentimeters();
+Diff = CaptGa-CaptDr ;
+
+   MoteurGD(800, 800); 
+   if ( Diff > 0)
+   {
+     MoteurGD(800, 600);
+   }
+   else if (Diff > 0)
+   {
+     MoteurGD(600, 800);
+   }
+   
+   
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -83,3 +120,4 @@ void loop()
     }
     
 }
+
