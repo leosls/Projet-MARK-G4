@@ -23,6 +23,10 @@ Ultrasonic UltrasonicGa(6);
 // Definition des Variables globales
 //---------------------------------------------------------------------------------------------------
 int Etat; 
+int CaptAv;
+int CaptDr;
+int CaptGa;
+int Diff;
 enum { Avancer, Obstacle }; // Définition des états possibles
 
 
@@ -42,6 +46,10 @@ void InitMoteurs()
 
     TIMSK5 = 1 << TOIE5; // Interruption sur débordement du Timer5
 }
+
+
+
+  
 
 //---------------------------------------------------------------------------------------------------
 // Fonction Arret Distance
@@ -76,6 +84,34 @@ void EvitementObstacles()
     // Code pour éviter les obstacles
     Serial.println("Evitement des obstacles activé");
 
+    MoteurStop();
+    MoteurD(Vmax);
+    
+}
+
+//---------------------------------------------------------------------------------------------------
+// Fonction d'avancer
+//----------------------------------------------------------------------------------------------
+
+void Favancer()
+
+{
+
+CaptDr = UltrasonicDr.MeasureInCentimeters();
+CaptGa = UltrasonicGa.MeasureInCentimeters();
+Diff = CaptGa-CaptDr ;
+
+   MoteurGD(800, 800); 
+   if ( Diff > 0)
+   {
+     MoteurGD(800, 600);
+   }
+   else if (Diff > 0)
+   {
+     MoteurGD(600, 800);
+   }
+   
+   
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -86,7 +122,6 @@ void setup()
     // Initialisation des broches, de la communication série, etc.
     Serial.begin(9600);
     InitMoteurs();
-
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -94,22 +129,30 @@ void setup()
 //---------------------------------------------------------------------------------------------------
 void loop() 
 {
+    CaptAv = UltrasonicAv.MeasureInCentimeters();
+    CaptDr = UltrasonicDr.MeasureInCentimeters();
+    CaptGa = UltrasonicGa.MeasureInCentimeters();
+    
+    if(CaptAv < 20)
+    {
+        Etat = Obstacle;
+    }
 
     switch (Etat)
     {
-    case Avancer:
-        /* code */
+        case Avancer:
+            
+        break;
 
-    break;
-
-    case Obstacle:
-        EvitementObstacles();
-        Etat = Avancer;
-    break;
-    
-    default:
-        //code ici
-    break;
+        case Obstacle:
+            EvitementObstacles();
+            Etat = Avancer;
+        break;
+        
+        default:
+            //code ici
+        break;
     }
     
 }
+
