@@ -25,6 +25,7 @@ int Etat;
 int CaptAv;
 int CaptDr;
 int CaptGa;
+int Diff;
 enum { Avancer, Obstacle }; // Définition des états possibles
 
 
@@ -45,6 +46,10 @@ void InitMoteurs()
     TIMSK5 = 1 << TOIE5; // Interruption sur débordement du Timer5
 }
 
+
+
+  
+
 //---------------------------------------------------------------------------------------------------
 // Fonction d'évitement des obstacles
 //---------------------------------------------------------------------------------------------------
@@ -56,6 +61,31 @@ void EvitementObstacles()
     MoteurStop();
     MoteurD(Vmax);
     
+}
+
+//---------------------------------------------------------------------------------------------------
+// Fonction d'avancer
+//----------------------------------------------------------------------------------------------
+
+void Favancer()
+
+{
+
+CaptDr = UltrasonicDr.MeasureInCentimeters();
+CaptGa = UltrasonicGa.MeasureInCentimeters();
+Diff = CaptGa-CaptDr ;
+
+   MoteurGD(800, 800); 
+   if ( Diff > 0)
+   {
+     MoteurGD(800, 600);
+   }
+   else if (Diff > 0)
+   {
+     MoteurGD(600, 800);
+   }
+   
+   
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -99,3 +129,4 @@ void loop()
     }
     
 }
+
