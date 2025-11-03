@@ -13,11 +13,18 @@
 #define MoteurGD(Vg, Vd) MoteurG(Vg); MoteurD(Vd)
 #define MoteurStop() MoteurGD(Stop, Stop)
 
+Ultrasonic UltrasonicAv(2); 
+Ultrasonic UltrasonicDr(4); 
+Ultrasonic UltrasonicGa(6); 
+
 
 //---------------------------------------------------------------------------------------------------
 // Definition des Variables globales
 //---------------------------------------------------------------------------------------------------
 int Etat; 
+int CaptAv;
+int CaptDr;
+int CaptGa;
 enum { Avancer, Obstacle }; // Définition des états possibles
 
 
@@ -46,6 +53,9 @@ void EvitementObstacles()
     // Code pour éviter les obstacles
     Serial.println("Evitement des obstacles activé");
 
+    MoteurStop();
+    MoteurD(Vmax);
+    
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -56,7 +66,6 @@ void setup()
     // Initialisation des broches, de la communication série, etc.
     Serial.begin(9600);
     InitMoteurs();
-
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -64,22 +73,29 @@ void setup()
 //---------------------------------------------------------------------------------------------------
 void loop() 
 {
+    CaptAv = UltrasonicAv.MeasureInCentimeters();
+    CaptDr = UltrasonicDr.MeasureInCentimeters();
+    CaptGa = UltrasonicGa.MeasureInCentimeters();
+    
+    if(CaptAv < 20)
+    {
+        Etat = Obstacle;
+    }
 
     switch (Etat)
     {
-    case Avancer:
-        /* code */
+        case Avancer:
+            
+        break;
 
-    break;
-
-    case Obstacle:
-        EvitementObstacles();
-        Etat = Avancer;
-    break;
-    
-    default:
-        //code ici
-    break;
+        case Obstacle:
+            EvitementObstacles();
+            Etat = Avancer;
+        break;
+        
+        default:
+            //code ici
+        break;
     }
     
 }
