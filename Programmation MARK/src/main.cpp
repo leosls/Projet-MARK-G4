@@ -3,6 +3,7 @@
 //---------------------------------------------------------------------------------------------------
 #include <Arduino.h>
 #include <ultrasonic.h>
+#include <Wire.h> 
 
 #define Stop 400
 #define Vmax 800
@@ -12,6 +13,10 @@
 #define MoteurD(Vd) OCR5B = Vd // Vd entre 0 et 800 (Possible [0...1999] si on modifie le prescaler)
 #define MoteurGD(Vg, Vd) MoteurG(Vg); MoteurD(Vd)
 #define MoteurStop() MoteurGD(Stop, Stop)
+
+Ultrasonic UltrasonicAv(2); 
+Ultrasonic UltrasonicDr(4); 
+Ultrasonic UltrasonicGa(6); 
 
 
 //---------------------------------------------------------------------------------------------------
@@ -37,6 +42,31 @@ void InitMoteurs()
 
     TIMSK5 = 1 << TOIE5; // Interruption sur débordement du Timer5
 }
+
+//---------------------------------------------------------------------------------------------------
+// Fonction Arret Distance
+//---------------------------------------------------------------------------------------------------
+void Arretdistance() 
+{
+    long DistAvant;
+    long DistDroite;
+    long DistGauche;
+    DistAvant=UltrasonicAv.MeasureInCentimeters();
+    DistDroite=UltrasonicDr.MeasureInCentimeters();
+    DistGauche=UltrasonicGa.MeasureInCentimeters();
+    if (DistAvant<5 || DistGauche<5 || DistDroite<5)
+    {
+        MoteurStop();
+    }    
+}
+//---------------------------------------------------------------------------------------------------
+// Fonction Arret Moteur Bloqué
+//---------------------------------------------------------------------------------------------------
+void ArretMB()
+{
+    
+}
+
 
 //---------------------------------------------------------------------------------------------------
 // Fonction d'évitement des obstacles
