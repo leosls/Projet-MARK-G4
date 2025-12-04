@@ -28,7 +28,7 @@ int CaptAv;
 int CaptDr;
 int CaptGa;
 int Diff;
-enum states{ Avancer, Obstacle, Virage, Securite, Arret }; // Définition des états possibles
+enum { Avancer, Obstacle, Virage, Securite, Arret }; // Définition des états possibles
 
 
 //---------------------------------------------------------------------------------------------------
@@ -76,13 +76,13 @@ void Fvirage()
 		if (CaptDr > CaptGa)
 		{
 			// Tourner à droite
-			MoteurGD(265, 245); // TBV, ajuster les vitesses selon les tests
+			MoteurGD(275, 240); // TBV, ajuster les vitesses selon les tests
 			Serial.println("Virage à droite");
 		}
 		else
 		{
 			// Tourner à gauche
-			MoteurGD(245, 265); // TBV, ajuster les vitesses selon les tests
+			MoteurGD(240, 275); // TBV, ajuster les vitesses selon les tests
 			Serial.println("Virage à gauche");
 		}
 	}
@@ -93,48 +93,10 @@ void Fvirage()
 //---------------------------------------------------------------------------------------------------
 void FevitementObstacles() 
 {
+    // Code pour éviter les obstacles
     Serial.println("Evitement des obstacles activé");
 
-    // Étape 1 : Tourner à droite jusqu'à avoir de l'espace devant
-    Serial.println("Étape 1 : Rotation à droite");
-    while(CaptAv < 74)
-    {
-        CaptAv = UltrasonicAv.MeasureInCentimeters();
-        MoteurGD(250, 600); // TBV, tourner à droite
-    }
-
-    // Étape 2 : Avancer pour dépasser l'obstacle en longeant
-    Serial.println("Étape 2 : Avancer en longeant l'obstacle");
-    CaptGa = UltrasonicGa.MeasureInCentimeters();
-    
-    while(CaptGa < 150) // TBV, tant que l'obstacle est à gauche
-    {
-        CaptAv = UltrasonicAv.MeasureInCentimeters();
-        CaptGa = UltrasonicGa.MeasureInCentimeters();
-        
-        // Sécurité : si mur devant, arrêter
-        if(CaptAv < 20)
-        {
-            MoteurStop();
-            break;
-        }
-        
-        // Avancer en se maintenant à distance de l'obstacle à gauche
-        MoteurGD(250, 250); // TBV, vitesse d'avancement
-    }
-
-    // Étape 3 : Tourner à gauche pour revenir dans le couloir
-    Serial.println("Étape 3 : Rotation à gauche pour reprendre le couloir");
-    CaptDr = UltrasonicDr.MeasureInCentimeters();
-    
-    while(CaptDr > 100) // TBV, tourner jusqu'à détecter le mur à droite
-    {
-        CaptDr = UltrasonicDr.MeasureInCentimeters();
-        MoteurGD(600, 250); // TBV, tourner à gauche
-    }
-
     MoteurStop();
-    Serial.println("Contournement terminé");
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -158,7 +120,7 @@ void Favancer()
 	Serial.println(Diff);
 
 	// Constante proportionnelle
-    float Kp = 1.5; // TBV à terme (à ajuster selon les tests)
+    float Kp = 1; // TBV à terme (à ajuster selon les tests)
 
 	// Calcul de la correction
     float Correction = Kp * Diff;
@@ -211,7 +173,7 @@ void loop()
 	//-----------------------------------------------------------------------------------
 	// Condition d'état
 	//-----------------------------------------------------------------------------------
-    if(CaptAv < 20) 
+    if(CaptAv < 20)
     {
         Etat = Obstacle;
     }
