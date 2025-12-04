@@ -97,7 +97,7 @@ void FevitementObstacles()
 
     // Étape 1 : Tourner à droite jusqu'à avoir de l'espace devant
     Serial.println("Étape 1 : Rotation à droite");
-    while(CaptAv < 74)
+    while(CaptAv < 20)
     {
         CaptAv = UltrasonicAv.MeasureInCentimeters();
         MoteurGD(250, 600); // TBV, tourner à droite
@@ -213,12 +213,15 @@ void loop()
 	//-----------------------------------------------------------------------------------
     if(CaptAv < 20) 
     {
-        Etat = Obstacle;
-    }
-	else if (CaptAv < 5 || CaptGa < 5 || CaptDr < 5)
-    {
-        Etat = Securite;
-    }
+        if (CaptAv < 5 || CaptGa < 5 || CaptDr < 5)
+        {
+            Etat = Securite;
+        }
+        else
+        {
+            Etat = Obstacle;
+        }
+    } 
 	else if (CaptDr > 150 || CaptGa > 150)
 	{
 		Etat = Virage;
